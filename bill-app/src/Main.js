@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 
 import { capitalizeFirstLetter } from './utils'
 import { showMessage } from './snackbar'
@@ -10,10 +10,34 @@ function Main({ name }) {
   const [sent, setSent] = useState([])
   const [paid, setPaid] = useState([])
 
+  const getMyRequests = useCallback(async () => {
+    try {
+      const resp = await fetch(`https://bill-api.tuhuynh.com/my-requests?who=${name}`, {
+        method: 'GET',
+      })
+      const json = await resp.json()
+      setSent(json)
+    } catch (err) {
+      showMessage(err)
+    }
+  }, [name])
+
+  const getMyDebts = useCallback(async () => {
+    try {
+      const resp = await fetch(`https://bill-api.tuhuynh.com/my-debts?who=${name}`, {
+        method: 'GET',
+      })
+      const json = await resp.json()
+      setPaid(json)
+    } catch (err) {
+      showMessage(err)
+    }
+  }, [name])
+
   useEffect(() => {
     void getMyRequests()
     void getMyDebts()
-  }, [])
+  }, [getMyDebts, getMyRequests])
 
   async function sendRequest(amount, reason) {
     amount = parseInt(amount)
@@ -44,30 +68,6 @@ function Main({ name }) {
 
       await getMyRequests()
       await getMyDebts()
-    } catch (err) {
-      showMessage(err)
-    }
-  }
-
-  async function getMyRequests() {
-    try {
-      const resp = await fetch(`https://bill-api.tuhuynh.com/my-requests?who=${name}`, {
-        method: 'GET',
-      })
-      const json = await resp.json()
-      setSent(json)
-    } catch (err) {
-      showMessage(err)
-    }
-  }
-
-  async function getMyDebts() {
-    try {
-      const resp = await fetch(`https://bill-api.tuhuynh.com/my-debts?who=${name}`, {
-        method: 'GET',
-      })
-      const json = await resp.json()
-      setPaid(json)
     } catch (err) {
       showMessage(err)
     }

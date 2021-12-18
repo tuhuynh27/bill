@@ -115,9 +115,10 @@ function Main({ name }) {
         <button onClick={() => sendRequest(amount, reason)}>Claim repay!</button>
       </p>
       {sent.length > 0 && <h3>Your sent claims: {sent.length}</h3>}
-      {sent.map(({ uuid, amount, reason }) => (
+      {sent.map(({ uuid, amount, reason, paid }) => (
         <p key={uuid}>
-          Claimed {amount}$ for "{reason}" <button className="small-button" onClick={() => deleteRequest(uuid)}>delete</button>
+          Claimed {amount}$ for "{reason}"
+          ({paid.length > 0 ? paid.map(e => capitalizeFirstLetter(e)).join(', ') : 'No one have'} paid) <button className="small-button" onClick={() => deleteRequest(uuid)}>delete</button>
         </p>
       ))}
       {paid.length > 0 && <h3>Your paid requests: {paid.length}</h3>}
